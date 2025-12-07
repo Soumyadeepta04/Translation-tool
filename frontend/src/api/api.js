@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+// const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://translation-tool-black.vercel.app/api';
 
 // Get all translations or search
 export const getTranslations = async (searchQuery = '') => {
