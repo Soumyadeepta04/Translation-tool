@@ -1,8 +1,27 @@
 import express from 'express';
 import Translation from '../models/Translation.js';
 import axios from 'axios';
+import mongoose from 'mongoose';
+import connectDB from '../config/db.js';
 
 const router = express.Router();
+
+// Middleware to ensure DB connection before handling requests
+router.use(async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('DB not connected, reconnecting...');
+      await connectDB();
+    }
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    return res.status(503).json({ 
+      message: 'Database connection unavailable', 
+      error: error.message 
+    });
+  }
+});
 
 // Auto-translate function using LibreTranslate API with MyMemory fallback
 const autoTranslate = async (text, targetLang) => {
@@ -64,24 +83,42 @@ router.post('/', async (req, res) => {
   try {
     const { key, english } = req.body;
 
+    console.log('Received POST request:', { key, english });
+
     if (!key || !english) {
       return res.status(400).json({ message: 'Key and English value are required' });
     }
 
+    // Validate key format
+    if (typeof key !== 'string' || key.trim().length === 0) {
+      return res.status(400).json({ message: 'Invalid key format' });
+    }
+
     // Check if key already exists
-    const existingTranslation = await Translation.findOne({ key });
+    const existingTranslation = await Translation.findOne({ key: key.trim() });
     if (existingTranslation) {
       return res.status(400).json({ message: 'Translation key already exists' });
     }
 
-    // Auto-generate translations for other languages using LibreTranslate API
+    // Auto-generate translations for other languages
     console.log('Translating text:', english);
     
-    const [hindiTranslation, bengaliTranslation, spanishTranslation] = await Promise.all([
+    // Use Promise.allSettled to prevent one translation failure from blocking all
+    const translationPromises = await Promise.allSettled([
       autoTranslate(english, 'hi'),
       autoTranslate(english, 'bn'),
       autoTranslate(english, 'es')
     ]);
+
+    const hindiTranslation = translationPromises[0].status === 'fulfilled' 
+      ? translationPromises[0].value 
+      : english;
+    const bengaliTranslation = translationPromises[1].status === 'fulfilled' 
+      ? translationPromises[1].value 
+      : english;
+    const spanishTranslation = translationPromises[2].status === 'fulfilled' 
+      ? translationPromises[2].value 
+      : english;
 
     const translations = {
       en: english,

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import translationRoutes from './routes/translations.js';
 
@@ -10,8 +11,8 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB (non-blocking for serverless)
+connectDB().catch(err => console.error('Initial DB connection failed:', err));
 
 // Middleware
 const allowedOrigins = [
@@ -41,12 +42,67 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check route - CRITICAL for debugging
+app.get('/api/health', async (req, res) => {
+  try {
+    const readyState = mongoose.connection.readyState;
+    const stateMap = {
+      0: 'disconnected',
+      1: 'connected',
+      2: 'connecting',
+      3: 'disconnecting'
+    };
+    
+    const envCheck = {
+      MONGODB_URI: process.env.MONGODB_URI ? '✅ Set' : '❌ Missing',
+      NODE_ENV: process.env.NODE_ENV || 'development'
+    };
+
+    // Try to connect if not connected
+    if (readyState !== 1) {
+      console.log('Health check: DB not connected, attempting connection...');
+      await connectDB();
+    }
+
+    const dbHost = mongoose.connection.host || 'unknown';
+    
+    res.json({ 
+      status: 'ok', 
+      database: {
+        state: stateMap[readyState],
+        host: dbHost,
+        name: mongoose.connection.name || 'unknown'
+      },
+      environment: envCheck,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'error', 
+      database: 'connection failed',
+      error: error.message,
+      environment: {
+        MONGODB_URI: process.env.MONGODB_URI ? '✅ Set' : '❌ MISSING - ADD THIS IN VERCEL!',
+        NODE_ENV: process.env.NODE_ENV || 'development'
+      }
+    });
+  }
+});
+
 // Routes
 app.use('/api/translations', translationRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.json({ message: 'Translation Management Tool API' });
+  res.json({ 
+    message: 'Translation Management Tool API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      translations: '/api/translations'
+    }
+  });
 });
 
 // Error handling middleware
