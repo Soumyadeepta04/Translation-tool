@@ -25,7 +25,7 @@ Whether you're managing a small project or enterprise-level application, TMT pro
 
 ## 🌍 **Live Demo**
 
-🔗 **Visit the live application:** [Coming Soon](#)
+🔗 **Visit the live application:** [translation-tool-l25e.vercel.app](https://translation-tool-l25e.vercel.app/)
 
 ---
 
