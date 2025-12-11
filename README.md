@@ -7,6 +7,51 @@
 
 ---
 
+## 🎬 Project Walkthrough Video
+<div align="center"> <video src="https://github.com/user-attachments/assets/f0b04718-a1f7-4f5f-bcd3-e03142eb1862" width="700" controls> Your browser does not support the video tag. </video> <p><i>Watch this short walkthrough of the Translation Tool Web Application</i></p> </div>
+
+## 📸 Application Screenshots
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/61b9f28b-aa7d-484d-ac9d-a720dc528572" alt="Translation Tool Dashboard" width="450"/>
+        <br/>
+        <b>🌐 Translation Tool Dashboard</b>
+        <br/>
+        <i>Centralized dashboard showing all available translations</i>
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/dcc15b1f-71c6-4d75-9432-77b7ecd290d7" alt="Edit Translation List" width="450"/>
+        <br/>
+        <b>✏️ Edit Translation List</b>
+        <br/>
+        <i>Modify existing translations with an easy-to-use interface</i>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/be037f0c-01c3-409d-876e-4502a377cf87" alt="Add New Language Interface" width="450"/>
+        <br/>
+        <b>➕ Add New Language</b>
+        <br/>
+        <i>Interface to add support for new languages and translations</i>
+      </td>
+      <td align="center">
+        <img src="https://github.com/user-attachments/assets/d4ba8c72-4509-4f85-b37e-441fbf95d1d9" alt="MongoDB Translation Schema" width="450"/>
+        <br/>
+        <b>🗄️ MongoDB Translation Schema</b>
+        <br/>
+        <i>Database view showing the translation-tool.translations structure</i>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<br/>
+
+---
 ## 🤖 Introduction
 
 **Translation Management Tool (TMT)** is a powerful, full-stack MERN application designed to simplify the process of managing multilingual content. Built with modern web technologies, TMT provides an intuitive interface for creating, editing, and organizing translations across multiple languages.
